@@ -546,7 +546,15 @@ mod tests {
     use super::*;
 
     fn temp_dir() -> String {
-        format!("/tmp/sapni_db_test_{}", std::process::id())
+        // 每次调用都取唯一目录：原先所有 DB 测试共用同一个 `/tmp/sapni_db_test_{pid}`，
+        // 在 cargo 默认并行线程下会互相 remove_dir_all，导致 flush 时偶发
+        // "系统找不到指定的路径 (os error 3)"。这里用原子计数器隔离各用例。
+        static N: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+        format!(
+            "/tmp/sapni_db_test_{}_{}",
+            std::process::id(),
+            N.fetch_add(1, std::sync::atomic::Ordering::SeqCst)
+        )
     }
 
     fn cleanup(dir: &str) {
