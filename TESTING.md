@@ -1,5 +1,12 @@
 # SapNi (SPNIX) 测试说明 / Testing Guide
 
+- 测试完成：是（2026-10-04）
+- 测试日期：2026-10-04
+- 测试内容：单元测试（原 50 个，覆盖工具/DB/协议等）；集成测试 `tests/`（tools_integration 8：LS/WRITE/DEL 文件往返、分页、缺参/未知动作错误、OpenAI schema；injection_security 6：EXEC 拒绝非 ASCII、shell 元字符在文件名是字面量、XSS 载荷原样往返、搜索/glob 字面匹配；plugin_hooks 7：插件注册→list、重复注册拒绝、移除/启用未注册拒绝、状态翻转、未知 action 拒绝）。
+- 运行命令：`cargo test --no-fail-fast`
+- 测试框架：Rust `#[cfg(test)]` + 外部 `tests/` 集成测试
+- 模型：豆包（Doubao）生成
+
 本仓库原本只有内置于 `src/**` 的 `#[cfg(test)]` 单元测试（50 个用例）。
 本次补测在不改动产品行为的前提下，新增了一个 library target（`src/lib.rs`，
 仅用于让 `tests/` 能调用工具/配置层）以及 `tests/` 下的集成测试。
